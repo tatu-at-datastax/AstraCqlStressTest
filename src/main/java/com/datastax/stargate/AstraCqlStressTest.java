@@ -24,7 +24,7 @@ public class AstraCqlStressTest
     final AtomicLong nextOkPrint = new AtomicLong(0);
 
     final ExecutorService executor;
-    
+
     private AstraCqlStressTest(String scbPath,
             String clientId, String clientSecret,
             String tableName,
@@ -92,13 +92,24 @@ public class AstraCqlStressTest
             Thread.sleep(1000L);
         }
 
-        log("INIT", "all clients started, letting test just... run. CTRL-C to quit");
+        log("INIT", "all threads started, letting test just... run. CTRL-C to quit");
+        final long testStartTime = System.currentTimeMillis();
 
+        // Let's print stuff out every 5 seconds
         while (true) {
-            Thread.sleep(1000L);
-            log("MAIN", "%d calls (%d fails)", totalCalls.get(), totalFails.get());
+            final long roundStart = System.currentTimeMillis();
+            final int totalCallsBefore = totalCalls.get();
+            Thread.sleep(5000L);
+            final long roundEnd = System.currentTimeMillis();
+            final double timeSecs = (roundEnd - roundStart) / 1000.0;
+            final double timeTotal = (roundEnd - testStartTime) / 1000.0;
+            final int totalCallsAfter = totalCalls.get();
+            double rate5s = (totalCallsAfter - totalCallsBefore) / timeSecs;
+            double rateTotal = totalCallsAfter / timeTotal;
+            log("MAIN", "%d total calls (%d fails): rate: %.2f/%.2f (total/last 5 sec)",
+                    totalCalls.get(), totalFails.get(),
+                    rateTotal, rate5s);
         }
-        
     }
 
     private void runClient(String clientId) {
@@ -160,8 +171,8 @@ public class AstraCqlStressTest
         if (nextOkPrint.get() > now) {
             return false;
         }
-        // Let's only print call results up to ~2 / second
-        nextOkPrint.set(now + 500L);
+        // Let's only print call results about every 2 seconds
+        nextOkPrint.set(now + 2000L);
         return true;
     }
     
