@@ -12,8 +12,8 @@
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	    <javac.src.version>1.8</javac.src.version>
-	    <javac.target.version>1.8</javac.target.version>
+	    <javac.src.version>17</javac.src.version>
+	    <javac.target.version>17</javac.target.version>
         <!--Use the latest version from https://search.maven.org/artifact/com.datastax.oss/java-driver-core -->
         <java.driver.version>4.15.0</java.driver.version>
     </properties>
