@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+	<parent>
+      <groupId>com.fasterxml</groupId>
+      <artifactId>oss-parent</artifactId>
+      <version>49</version>
+    </parent>
+    <groupId>com.datastax.stargate</groupId>
+    <artifactId>AstraCqlStressTest</artifactId>
+    <version>0.5</version>
+    <packaging>jar</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <javac.src.version>1.8</javac.src.version>
+	    <javac.target.version>1.8</javac.target.version>
+        <!--Use the latest version from https://search.maven.org/artifact/com.datastax.oss/java-driver-core -->
+        <java.driver.version>4.15.0</java.driver.version>
+    </properties>
+    <dependencies>
+        <!-- START-javaDriverDependencyCore -->
+        <dependency>
+            <groupId>com.datastax.oss</groupId>
+            <artifactId>java-driver-core</artifactId>
+            <version>${java.driver.version}</version>
+        </dependency>
+        <!-- END-javaDriverDependencyCore -->
+        <!-- START-javaDriverDependencyQuery -->
+        <dependency>
+            <groupId>com.datastax.oss</groupId>
+            <artifactId>java-driver-query-builder</artifactId>
+            <version>${java.driver.version}</version>
+        </dependency>
+        <!-- END-javaDriverDependencyQuery -->
+        <!-- START-javaDriverDependencyMapper -->
+        <dependency>
+            <groupId>com.datastax.oss</groupId>
+            <artifactId>java-driver-mapper-runtime</artifactId>
+            <version>${java.driver.version}</version>
+        </dependency>
+        <!-- END-javaDriverDependencyMapper -->
+    </dependencies>
+
+    <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>com.datastax.stargate.AstraCqlStressTest</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <executions>
+              <execution>
+               <phase>package</phase>
+                <goals>
+                <goal>shade</goal>
+               </goals>
+               <configuration>
+                <transformers>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <mainClass>com.datastax.stargate.AstraCqlStressTest</mainClass>
+                    </transformer>
+                </transformers>
+                <createDependencyReducedPom>false</createDependencyReducedPom>
+                <filters>
+                    <filter>
+                        <artifact>*:*</artifact>
+                        <excludes>
+                            <exclude>META-INF/*.SF</exclude>
+                            <exclude>META-INF/*.DSA</exclude>
+                            <exclude>META-INF/*.RSA</exclude>
+                        </excludes>
+                    </filter>
+                </filters>
+               </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+    </plugins>
+    </build>
+</project>
