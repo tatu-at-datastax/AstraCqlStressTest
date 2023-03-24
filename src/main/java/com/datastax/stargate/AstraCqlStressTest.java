@@ -95,6 +95,10 @@ public class AstraCqlStressTest
         log("INIT", "all threads started, letting test just... run. CTRL-C to quit");
         final long testStartTime = System.currentTimeMillis();
 
+        // Reset at this point (could have blocked calc but)
+        totalCalls.set(0);
+        totalFails.set(0);
+
         // Let's print stuff out every 5 seconds
         while (true) {
             final long roundStart = System.currentTimeMillis();
