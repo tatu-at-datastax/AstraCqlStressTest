@@ -128,21 +128,23 @@ public class AstraCqlStressTest
         try (CqlSession session = createSession()) {
             // Select the release_version from the system.local table:
             String cql = "select * from "+tableName;
+            final long callStartTime = System.currentTimeMillis();
             ResultSet rs = session.execute(cql);
             Row row = rs.one();
             final long now = System.currentTimeMillis();
-            final long timeMsecs = now - startTime;
+            final long totalTimeMsecs = now - startTime;
             if (row != null) {
+                final long callTimeMsecs = now - callStartTime;
                 // Print the results of the CQL query to the console:
                 if (printOk || beenAWhile(now)) {
-                    log("INFO", "[%s] Fetched row from '%s' in %d msecs: %d values.",
-                            clientId, tableName, timeMsecs, row.size());
+                    log("INFO", "[%s] Fetched row from '%s' in (%d/%d msecs): %d values.",
+                            clientId, tableName, callTimeMsecs, totalTimeMsecs, row.size());
                 }
             } else {
                 // How/why would this occur?
                 totalFails.incrementAndGet();
                 log("ERROR", "[%s] Fetch from '%s' failed in %d msecs (query '%s')",
-                        clientId, tableName, timeMsecs, cql);
+                        clientId, tableName, totalTimeMsecs, cql);
             }
         } catch (Exception e) {
             totalFails.incrementAndGet();
@@ -153,13 +155,13 @@ public class AstraCqlStressTest
     private void log(String category, String tmpl, Object... args) {
         System.out.println(category+" "+tmpl.formatted(args));
     }
-    
-    // Let's only print call results up to ~5 / second
+
     private boolean beenAWhile(long now) {
         if (nextOkPrint.get() > now) {
             return false;
         }
-        nextOkPrint.set(now + 200L);
+        // Let's only print call results up to ~2 / second
+        nextOkPrint.set(now + 500L);
         return true;
     }
     

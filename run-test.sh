@@ -6,4 +6,4 @@
 # * system_schema.keyspaces
 
 java -jar target/AstraCqlStressTest-0.5.jar ./secure-connect-test.zip "token" "$ASTRA_TOKEN" \
-    system.local 5
+    system.local 20
